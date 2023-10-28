@@ -25,6 +25,7 @@ foreach ($Usuarios as $Usuario) {
 if ($usuarioEncontrado) {
     echo json_encode("Usuario Encontrado");
 } else {
+    session_destroy();
     echo json_encode("No se encontró el usuario");
 }
 
