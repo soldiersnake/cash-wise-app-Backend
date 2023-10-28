@@ -5,10 +5,29 @@ include_once "funciones.php";
 
 session_start();
 
-$User = $_POST["usuario"];
-$Pass = $_POST["constraseña"];
+$data = json_decode(file_get_contents("php://input"), true);
 
-echo json_encode("Hola Inicio SESSION" . $User . " " . $Pass);
+$User = $data["usuario"];
+$Pass = $data["contrasena"];
+
+// echo json_encode("Hola Inicio SESSION " . $User . " " . $Pass);
+
+$Usuarios = obtenerUsuarios();
+$usuarioEncontrado = false;
+
+foreach ($Usuarios as $Usuario) {
+    if ($Usuario->correo == $User) {
+        if ($Usuario->clave == $Pass) {
+            $usuarioEncontrado = true;
+        }
+    }
+}
+if ($usuarioEncontrado) {
+    echo json_encode("Usuario Encontrado");
+} else {
+    echo json_encode("No se encontró el usuario");
+}
+
 
 // if (!isset($_POST["User"])) {
 //     if (!isset($_SESSION['idSesion'])) {
@@ -26,15 +45,6 @@ echo json_encode("Hola Inicio SESSION" . $User . " " . $Pass);
 // $Pass = "";
 // $ContadorBd = 0;
 
-// foreach ($Usuarios as $Usuario) {
-//     if ($Usuario->User == $User) {
-//         if ($Usuario->Pass == $Clave) {
-//             $UserBd = $Usuario->User;
-//             $Pass = $Usuario->Pass;
-//             $ContadorBd = $Usuario->Contador;
-//         }
-//     }
-// }
 
 // if ($User != $UserBd || $Clave != $Pass) {
 //     session_destroy();
