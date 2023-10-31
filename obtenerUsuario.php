@@ -1,15 +1,15 @@
 <?php
 include_once "cors.php";
 
-if (!isset($_GET["id"])) {
+if (!isset($_GET["user"])) {
     echo json_encode(null);
     exit;
 }
 
-$id = $_GET["id"];
+$user = $_GET["user"];
 
 include_once "funciones.php";
 
-$usuario = obtenerUsuario($id);
+$usuario = obtenerUsuario($user);
 echo json_encode($usuario);
 ?>

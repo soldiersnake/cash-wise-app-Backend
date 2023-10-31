@@ -6,11 +6,11 @@ function obtenerUsuarios()
     return $sentencia->fetchAll();
 }
 
-function obtenerUsuario($id)
+function obtenerUsuario($user)
 {
     $bd = obtenerConexion();
-    $sentencia = $bd->prepare("SELECT * FROM usuarios WHERE idusuario = ?");
-    $sentencia->execute([$id]);
+    $sentencia = $bd->prepare("SELECT * FROM usuarios WHERE correo = ?");
+    $sentencia->execute([$user]);
     return $sentencia->fetchObject();
 }
 
