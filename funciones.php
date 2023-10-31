@@ -14,6 +14,8 @@ function obtenerUsuario($user)
     return $sentencia->fetchObject();
 }
 
+
+
 function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
@@ -29,6 +31,45 @@ function obtenerTipoDeGasto()
     $sentencia = $bd->query("SELECT * FROM tipo_gasto");
     return $sentencia->fetchAll();
 }
+
+function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $fecharegistro, $tipousuario, $sueldomensual) {
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
+    
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = "INSERT INTO usuarios (admin, nombre, apellido, correo, clave, fecharegistro)
+                   VALUES (0, :nombre, :apellido, :correo, :clave, :fecharegistro)";
+    
+    $stmtUsuario = $bd->prepare($sentencia);
+    $stmtUsuario->bindParam(':nombre', $nombre);
+    $stmtUsuario->bindParam(':apellido', $apellido);
+    $stmtUsuario->bindParam(':correo', $correo);
+    $stmtUsuario->bindParam(':clave', $clave);
+    $stmtUsuario->bindParam(':fecharegistro', $fecharegistro);
+    
+    if ($stmtUsuario->execute()) {
+        // Obtener el ID del nuevo usuario insertado
+        $idUsuario = $bd->lastInsertId();
+        
+        
+        $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual)
+                       VALUES (:idusuario, :tipousuario, :sueldomensual)";
+    
+        $stmtCliente = $bd->prepare($sentencia);
+        $stmtCliente->bindParam(':idusuario', $idUsuario);
+        $stmtCliente->bindParam(':tipousuario', $tipousuario);
+        $stmtCliente->bindParam(':sueldomensual', $sueldomensual);
+        
+        if ($stmtCliente->execute()) {
+            echo "Nuevo usuario/cliente registrado con éxito.";
+        } else {
+            echo "Error al registrar el cliente: " . implode(", ", $stmtCliente->errorInfo());
+        }
+    } else {
+        echo "Error al registrar el usuario: " . implode(", ", $stmtUsuario->errorInfo());
+    }
+    
+}    
 
 function obtenerConexion()
 {
