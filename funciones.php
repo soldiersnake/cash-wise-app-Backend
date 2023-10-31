@@ -91,9 +91,11 @@ function registrarContacto($nombre, $apellido, $correo, $mensaje)
     $sentencia->bindParam(':correo', $correo);
     $sentencia->bindParam(':mensaje', $mensaje);
     if ($sentencia->execute()) {
-        echo "Se envio la informacion correctamente";
+        $respuesta = array('mensaje' => 'Se envio la informacion correctamente');
+        return $respuesta;
     } else {
-        echo "Error al registrar los datos: " . implode(", ", $sentencia->errorInfo());
+        $respuesta = array('mensaje' => "Error al registrar los datos ");
+        return $respuesta;
     }
 }
 

@@ -2,16 +2,19 @@
 include_once "cors.php";
 include_once "funciones.php";
 
-$nombre = $_POST["nombre"];
-$apellido = $_POST["apellido"];
-$correo = $_POST["correo"];
-$mensaje = $_POST["mensaje"];
-// $nombre = $_POST["nombre"];
-// $apellido = $_POST["apellido"];
-// $correo = $_POST["correo"];
-// $mensaje = $_POST["mensaje"];
+header("Content-Type: application/json");
 
+$data = json_decode(file_get_contents('php://input'), true);
 
-$respuesta = registrarContacto($nombre,$apellido,$correo,$mensaje );
+if (isset($data['nombre']) && isset($data['apellido']) && isset($data['correo']) && isset($data['mensaje']) ) {
+    $nombre = $data['nombre'];
+    $apellido = $data['apellido'];
+    $correo = $data['correo'];
+    $mensaje = $data['mensaje'];
+    
+    $respuesta = registrarContacto($nombre,$apellido,$correo,$mensaje);
+} else {
+    $respuesta = array('mensaje' => 'Faltan datos requeridos');
+}
 echo json_encode($respuesta);
 ?>
