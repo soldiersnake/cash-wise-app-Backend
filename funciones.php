@@ -1,4 +1,5 @@
 <?php
+header("Content-Type: application/json");
 function obtenerUsuarios()
 {
     $bd = obtenerConexion();
@@ -32,7 +33,8 @@ function obtenerTipoDeGasto()
     return $sentencia->fetchAll();
 }
 
-function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $fecharegistro, $tipousuario, $sueldomensual) {
+//registrarNuevoUsuario('prueba','to','dd','dd','cliente','1000');
+function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro) {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
     
@@ -51,7 +53,6 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $fecharegist
         // Obtener el ID del nuevo usuario insertado
         $idUsuario = $bd->lastInsertId();
         
-        
         $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual)
                        VALUES (:idusuario, :tipousuario, :sueldomensual)";
     
@@ -61,15 +62,40 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $fecharegist
         $stmtCliente->bindParam(':sueldomensual', $sueldomensual);
         
         if ($stmtCliente->execute()) {
-            echo "Nuevo usuario/cliente registrado con éxito.";
+            $respuesta = array('mensaje' => 'Nuevo usuario/cliente registrado con éxito');
+            return $respuesta;
         } else {
-            echo "Error al registrar el cliente: " . implode(", ", $stmtCliente->errorInfo());
+            $respuesta = array('mensaje' => 'Error al registrar el cliente: ' . implode(", ", $stmtCliente->errorInfo()));
+            return $respuesta;
         }
     } else {
-        echo "Error al registrar el usuario: " . implode(", ", $stmtUsuario->errorInfo());
+        $respuesta = array('mensaje' => 'Error al registrar el usuario: ' . implode(", ", $stmtUsuario->errorInfo()));
+        return $respuesta;
     }
+}
+
+
+
+function registrarContacto($nombre, $apellido, $correo, $mensaje)
+{
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
     
-}    
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = "INSERT INTO contacto (nombre, apellido, correo, mensaje)
+    VALUES (:nombre, :apellido, :correo, :mensaje);";
+    
+    $sentencia = $bd->prepare($sentencia);
+    $sentencia->bindParam(':nombre', $nombre);
+    $sentencia->bindParam(':apellido', $apellido);
+    $sentencia->bindParam(':correo', $correo);
+    $sentencia->bindParam(':mensaje', $mensaje);
+    if ($sentencia->execute()) {
+        echo "Se envio la informacion correctamente";
+    } else {
+        echo "Error al registrar los datos: " . implode(", ", $sentencia->errorInfo());
+    }
+}
 
 function obtenerConexion()
 {

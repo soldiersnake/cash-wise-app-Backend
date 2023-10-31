@@ -2,14 +2,22 @@
 include_once "cors.php";
 include_once "funciones.php";
 
-$nombre = $_POST["nombre"];
-$apellido = $_POST["apellido"];
-$correo = $_POST["correo"];
-$clave = $_POST["clave"];
-$fecharegistro = $_POST["fecharegistro"];
-$tipousuario ="cliente";
-$sueldomensual = $_POST["sueldomensual"];
+header("Content-Type: application/json");
 
-$respuesta = registrarNuevoUsuario($nombre,$apellido,$correo,$clave,$fecharegistro,$tipousuario,$sueldomensual );
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (isset($data['nombre']) && isset($data['apellido']) && isset($data['correo']) && isset($data['clave']) && isset($data['sueldomensual'])) {
+    $nombre = $data['nombre'];
+    $apellido = $data['apellido'];
+    $correo = $data['correo'];
+    $clave = $data['clave'];
+    $tipousuario = "cliente";
+    $sueldomensual = $data['sueldomensual'];
+    $fecharegistro = date('Y-m-d H:i:s');
+    $respuesta = registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual,$fecharegistro);
+} else {
+    $respuesta = array('mensaje' => 'Faltan datos requeridos');
+}
+
 echo json_encode($respuesta);
 ?>
