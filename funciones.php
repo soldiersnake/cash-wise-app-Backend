@@ -99,6 +99,30 @@ function registrarContacto($nombre, $apellido, $correo, $mensaje)
     }
 }
 
+
+function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
+{
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
+    
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = "INSERT INTO `operaciones` (`monto`, `fechaoperacion`, `cliente_idusuario`, `tipo_gasto_id`)
+    VALUES (:monto,:fechaoperacion , :idusuario, :tipo_gasto_id);";
+    
+    $sentencia = $bd->prepare($sentencia);
+    $sentencia->bindParam(':monto', $monto);
+    $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
+    $sentencia->bindParam(':idusuario', $idusuario);
+    $sentencia->bindParam(':tipo_gasto_id', $tipo_gasto_id);
+    if ($sentencia->execute()) {
+        $respuesta = array('mensaje' => 'Se registro la informacion correctamente');
+        return $respuesta;
+    } else {
+        $respuesta = array('mensaje' => "Error al registrar los datos ");
+        return $respuesta;
+    }
+}
+
 function obtenerConexion()
 {
     $dbName = "bw9is5cg7nkeccmci5nc";
