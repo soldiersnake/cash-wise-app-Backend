@@ -14,10 +14,12 @@ function obtenerUsuario($user)
     return $sentencia->fetchObject();
 }
 
-function obtenerOperaciones()
+function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
-    $sentencia = $bd->query("SELECT * FROM operaciones");
+    $sentencia = $bd->prepare("SELECT * FROM operaciones WHERE cliente_idusuario = :id");
+    $sentencia->bindParam(':id', $id, PDO::PARAM_INT);
+    $sentencia->execute();
     return $sentencia->fetchAll();
 }
 
