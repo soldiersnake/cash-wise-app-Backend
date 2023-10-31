@@ -122,7 +122,29 @@ function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
         return $respuesta;
     }
 }
-
+function editarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
+{
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
+    
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = ("UPDATE operaciones
+                           SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
+                           WHERE id_operacion = :id_operacion");
+    
+    $sentencia = $bd->prepare($sentencia);
+    $sentencia->bindParam(':monto', $monto);
+    $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
+    $sentencia->bindParam(':idusuario', $idusuario);
+    $sentencia->bindParam(':tipo_gasto_id', $tipo_gasto_id);
+    if ($sentencia->execute()) {
+        $respuesta = array('mensaje' => 'Se actualizo la informacion correctamente');
+        return $respuesta;
+    } else {
+        $respuesta = array('mensaje' => "Error al actualizar los datos ");
+        return $respuesta;
+    }
+}
 function obtenerConexion()
 {
     $dbName = "bw9is5cg7nkeccmci5nc";
@@ -142,5 +164,3 @@ function obtenerConexion()
         echo $e->getMessage();
     }
 }
-
-?>

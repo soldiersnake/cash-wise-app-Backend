@@ -10,7 +10,7 @@ if (isset($data['nombre']) && isset($data['apellido']) && isset($data['correo'])
     $nombre = $data['nombre'];
     $apellido = $data['apellido'];
     $correo = $data['correo'];
-    $clave = $data['clave'];
+    $clave = md5($data['clave']); // Hashear la contraseña en MD5
     $tipousuario = "cliente";
     $sueldomensual = $data['sueldomensual'];
     $fecharegistro = date('Y-m-d H:i:s');
