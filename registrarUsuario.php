@@ -11,7 +11,7 @@ if (isset($data['nombre']) && isset($data['apellido']) && isset($data['correo'])
     $apellido = $data['apellido'];
     $correo = $data['correo'];
     $clave = md5($data['clave']);
-    $tipousuario = "cliente";
+    $tipousuario = "Cliente";
     $sueldomensual = $data['sueldomensual'];
     $fecharegistro = date('Y-m-d H:i:s');
     $respuesta = registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro);

@@ -17,6 +17,14 @@ function obtenerUsuario($user)
 
 
 
+function obtenerCliente($id)
+{
+    $bd = obtenerConexion();
+    $sentencia = $bd->prepare("SELECT * FROM cliente WHERE idusuario = ?");
+    $sentencia->execute([$id]);
+    return $sentencia->fetchObject();
+}
+
 function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
@@ -38,33 +46,34 @@ function obtenerTipoDeGasto()
 }
 
 //registrarNuevoUsuario('prueba','to','dd','dd','cliente','1000');
-function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro) {
+function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro)
+{
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO usuarios (admin, nombre, apellido, correo, clave, fecharegistro)
                    VALUES (0, :nombre, :apellido, :correo, :clave, :fecharegistro)";
-    
+
     $stmtUsuario = $bd->prepare($sentencia);
     $stmtUsuario->bindParam(':nombre', $nombre);
     $stmtUsuario->bindParam(':apellido', $apellido);
     $stmtUsuario->bindParam(':correo', $correo);
     $stmtUsuario->bindParam(':clave', $clave);
     $stmtUsuario->bindParam(':fecharegistro', $fecharegistro);
-    
+
     if ($stmtUsuario->execute()) {
         // Obtener el ID del nuevo usuario insertado
         $idUsuario = $bd->lastInsertId();
-        
+
         $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual)
                        VALUES (:idusuario, :tipousuario, :sueldomensual)";
-    
+
         $stmtCliente = $bd->prepare($sentencia);
         $stmtCliente->bindParam(':idusuario', $idUsuario);
         $stmtCliente->bindParam(':tipousuario', $tipousuario);
         $stmtCliente->bindParam(':sueldomensual', $sueldomensual);
-        
+
         if ($stmtCliente->execute()) {
             $respuesta = array('mensaje' => 'Nuevo usuario/cliente registrado con éxito');
             return $respuesta;
@@ -78,17 +87,15 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
     }
 }
 
-
-
 function registrarContacto($nombre, $apellido, $correo, $mensaje)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO contacto (nombre, apellido, correo, mensaje)
     VALUES (:nombre, :apellido, :correo, :mensaje);";
-    
+
     $sentencia = $bd->prepare($sentencia);
     $sentencia->bindParam(':nombre', $nombre);
     $sentencia->bindParam(':apellido', $apellido);
@@ -103,16 +110,15 @@ function registrarContacto($nombre, $apellido, $correo, $mensaje)
     }
 }
 
-
 function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO `operaciones` (`monto`, `fechaoperacion`, `cliente_idusuario`, `tipo_gasto_id`)
     VALUES (:monto,:fechaoperacion , :idusuario, :tipo_gasto_id);";
-    
+
     $sentencia = $bd->prepare($sentencia);
     $sentencia->bindParam(':monto', $monto);
     $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
@@ -141,7 +147,7 @@ function editarOperacion($id_operacion, $monto, $fechaoperacion, $tipo_gasto_id)
     $sentencia->bindParam(':nueva_fecha', $fechaoperacion); // Cambié aquí
     $sentencia->bindParam(':nuevo_tipo_gasto', $tipo_gasto_id); // Cambié aquí
     $sentencia->bindParam(':id_operacion', $id_operacion);
-    
+
     if ($sentencia->execute()) {
         $respuesta = array('mensaje' => 'true');
         return $respuesta;
@@ -181,9 +187,8 @@ function eliminarOperacion($id_operacion)
     }
 }
 
-
-
-function buscador($filtro,$idusuario){
+function buscador($filtro, $idusuario)
+{
     $bd = obtenerConexion();
 
     // Verifica si la conexión a la base de datos fue exitosa
@@ -216,7 +221,6 @@ function buscador($filtro,$idusuario){
         return $respuesta;
     }
 }
-
 
 function obtenerConexion()
 {
