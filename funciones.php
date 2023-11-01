@@ -15,6 +15,14 @@ function obtenerUsuario($user)
     return $sentencia->fetchObject();
 }
 
+function obtenerCliente($id)
+{
+    $bd = obtenerConexion();
+    $sentencia = $bd->prepare("SELECT * FROM cliente WHERE idusuario = ?");
+    $sentencia->execute([$id]);
+    return $sentencia->fetchObject();
+}
+
 function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
@@ -71,8 +79,6 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
         return $respuesta;
     }
 }
-
-
 
 function registrarContacto($nombre, $apellido, $correo, $mensaje)
 {
