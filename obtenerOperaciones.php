@@ -1,5 +1,7 @@
 <?php
 include_once "cors.php";
+include_once "funciones.php";
+
 
 if (!isset($_GET["id"])) {
     echo json_encode(null);
@@ -8,7 +10,6 @@ if (!isset($_GET["id"])) {
 
 $id = $_GET["id"];
 
-include_once "funciones.php";
 
 $operaciones = obtenerOperaciones($id);
 echo json_encode($operaciones);

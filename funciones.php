@@ -25,6 +25,8 @@ function obtenerCliente($id)
     return $sentencia->fetchObject();
 }
 
+
+
 function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
@@ -87,6 +89,49 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
     }
 }
 
+function editarGasto($id_gasto,$descripcion,$color)
+{
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
+
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = $bd->prepare("UPDATE tipo_gasto
+                               SET descripcion = :nuevo_descripcion, color = :nuevo_color
+                               WHERE id_gasto = :id_gasto");
+
+    $sentencia->bindParam(':nuevo_descripcion', $descripcion); // Cambié aquí
+    $sentencia->bindParam(':nuevo_color', $color); // Cambié aquí
+    $sentencia->bindParam(':id_gasto', $id_gasto);
+
+    if ($sentencia->execute()) {
+        $respuesta = array('mensaje' => 'true');
+        return $respuesta;
+    } else {
+        $respuesta = array('mensaje' => "Error al actualizar los datos");
+        return $respuesta;
+    }
+}
+
+function registrarTipoGasto($descripcion,$color)
+{
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
+
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = "INSERT INTO tipo_gasto (descripcion, color)
+    VALUES ( :descripcion, :color);";
+
+    $sentencia = $bd->prepare($sentencia);
+    $sentencia->bindParam(':descripcion', $descripcion);
+    $sentencia->bindParam(':color', $color);
+    if ($sentencia->execute()) {
+        $respuesta = array('mensaje' => 'true');
+        return $respuesta;
+    } else {
+        $respuesta = array('mensaje' => "false");
+        return $respuesta;
+    }
+}
 function registrarContacto($nombre, $apellido, $correo, $mensaje)
 {
     // Obtener una conexión a la base de datos
@@ -161,17 +206,14 @@ function eliminarOperacion($id_operacion)
 {
     $bd = obtenerConexion();
 
-    // Verifica si la conexión a la base de datos fue exitosa
     if (!$bd) {
         return array('mensaje' => 'Error en la conexión a la base de datos');
     }
 
     try {
-        // Preparar la consulta SQL con un marcador de posición
         $sentencia = $bd->prepare("DELETE FROM operaciones
                                    WHERE id_operacion = :id_operacion");
 
-        // Vincula el parámetro
         $sentencia->bindParam(':id_operacion', $id_operacion);
 
         if ($sentencia->execute()) {
