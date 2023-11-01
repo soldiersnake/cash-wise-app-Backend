@@ -122,29 +122,62 @@ function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
         return $respuesta;
     }
 }
-function editarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
+
+function editarOperacion($id_operacion, $monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
-    $sentencia = ("UPDATE operaciones
-                           SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
-                           WHERE id_operacion = :id_operacion");
+    $sentencia = $bd->prepare("UPDATE operaciones
+                               SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
+                               WHERE id_operacion = :id_operacion");
+
+    $sentencia->bindParam(':nuevo_monto', $monto); // Cambié aquí
+    $sentencia->bindParam(':nueva_fecha', $fechaoperacion); // Cambié aquí
+    $sentencia->bindParam(':nuevo_tipo_gasto', $tipo_gasto_id); // Cambié aquí
+    $sentencia->bindParam(':id_operacion', $id_operacion);
     
-    $sentencia = $bd->prepare($sentencia);
-    $sentencia->bindParam(':monto', $monto);
-    $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
-    $sentencia->bindParam(':idusuario', $idusuario);
-    $sentencia->bindParam(':tipo_gasto_id', $tipo_gasto_id);
     if ($sentencia->execute()) {
-        $respuesta = array('mensaje' => 'Se actualizo la informacion correctamente');
+        $respuesta = array('mensaje' => 'Se actualizó la información correctamente');
         return $respuesta;
     } else {
-        $respuesta = array('mensaje' => "Error al actualizar los datos ");
+        $respuesta = array('mensaje' => "Error al actualizar los datos");
         return $respuesta;
     }
 }
+
+function eliminarOperacion($id_operacion, $idusuario)
+{
+    $bd = obtenerConexion();
+
+    // Verifica si la conexión a la base de datos fue exitosa
+    if (!$bd) {
+        return array('mensaje' => 'Error en la conexión a la base de datos');
+    }
+
+    try {
+        // Preparar la consulta SQL con un marcador de posición
+        $sentencia = $bd->prepare("DELETE FROM operaciones
+                                   WHERE id_operacion = :id_operacion");
+
+        // Vincula el parámetro
+        $sentencia->bindParam(':id_operacion', $id_operacion);
+
+        if ($sentencia->execute()) {
+            $respuesta = array('mensaje' => 'Se eliminó la operación correctamente');
+            return $respuesta;
+        } else {
+            $respuesta = array('mensaje' => 'Error al eliminar la operación');
+            return $respuesta;
+        }
+    } catch (PDOException $e) {
+        $respuesta = array('mensaje' => 'Error en la consulta: ' . $e->getMessage());
+        return $respuesta;
+    }
+}
+
+
 function obtenerConexion()
 {
     $dbName = "bw9is5cg7nkeccmci5nc";
