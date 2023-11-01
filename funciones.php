@@ -1,5 +1,8 @@
 <?php
 header("Content-Type: application/json");
+
+
+
 function obtenerUsuarios()
 {
     $bd = obtenerConexion();
@@ -36,6 +39,15 @@ function obtenerOperaciones($id)
     WHERE operaciones.cliente_idusuario = :id
     ");
     $sentencia->bindParam(':id', $id, PDO::PARAM_INT);
+    $sentencia->execute();
+    return $sentencia->fetchAll();
+}
+
+function obtenerOperacionPorID_O($id_operacion)
+{
+    $bd = obtenerConexion();
+    $sentencia = $bd->prepare("SELECT * from operaciones WHERE id_operacion = :id");
+    $sentencia->bindParam(':id', $id_operacion);
     $sentencia->execute();
     return $sentencia->fetchAll();
 }
@@ -256,7 +268,6 @@ function eliminarOperacion($id_operacion)
         return $respuesta;
     }
 }
-
 function buscador($filtro, $idusuario)
 {
     $bd = obtenerConexion();
@@ -268,15 +279,23 @@ function buscador($filtro, $idusuario)
 
     try {
         // Preparar la consulta SQL con un marcador de posición
-        $sentencia = $bd->prepare("SELECT * FROM operaciones 
-                                  WHERE monto LIKE :filtro_monto 
-                                  OR fechaoperacion LIKE :filtro_fecha");
-
         $filtro_monto = '%' . $filtro . '%'; // Agregar comodines % para búsqueda parcial
+        $filtro_descripcion = '%' . $filtro . '%';
         $filtro_fecha = '%' . $filtro . '%';
 
+        $sql = "SELECT o.id_operacion, o.monto, o.fechaoperacion, o.cliente_idusuario, tg.descripcion AS tipo_gasto_descripcion
+                FROM operaciones o
+                INNER JOIN tipo_gasto tg ON o.tipo_gasto_id = tg.id_gasto
+                WHERE (o.monto LIKE :filtro_monto OR tg.descripcion LIKE :filtro_descripcion
+                        OR o.fechaoperacion LIKE :filtro_fecha)
+                AND o.cliente_idusuario = :idusuario";
+
+        $sentencia = $bd->prepare($sql);
+
         $sentencia->bindParam(':filtro_monto', $filtro_monto);
+        $sentencia->bindParam(':filtro_descripcion', $filtro_descripcion);
         $sentencia->bindParam(':filtro_fecha', $filtro_fecha);
+        $sentencia->bindParam(':idusuario', $idusuario);
 
         if ($sentencia->execute()) {
             // Recupera los resultados
@@ -291,6 +310,7 @@ function buscador($filtro, $idusuario)
         return $respuesta;
     }
 }
+
 
 function obtenerConexion()
 {
