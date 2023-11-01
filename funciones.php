@@ -132,6 +132,34 @@ function registrarTipoGasto($descripcion,$color)
         return $respuesta;
     }
 }
+
+function eliminarGasto($id_gasto)
+{
+    $bd = obtenerConexion();
+
+    if (!$bd) {
+        return array('mensaje' => 'Error en la conexión a la base de datos');
+    }
+
+    try {
+        $sentencia = $bd->prepare("DELETE FROM tipo_gasto
+                                   WHERE id_gasto = :id_gasto");
+
+        $sentencia->bindParam(':id_gasto', $id_gasto);
+
+        if ($sentencia->execute()) {
+            $respuesta = array('mensaje' => 'true');
+            return $respuesta;
+        } else {
+            $respuesta = array('mensaje' => 'Error al eliminar la operación');
+            return $respuesta;
+        }
+    } catch (PDOException $e) {
+        $respuesta = array('mensaje' => 'Error en la consulta: ' . $e->getMessage());
+        return $respuesta;
+    }
+}
+
 function registrarContacto($nombre, $apellido, $correo, $mensaje)
 {
     // Obtener una conexión a la base de datos
