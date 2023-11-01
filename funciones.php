@@ -15,8 +15,6 @@ function obtenerUsuario($user)
     return $sentencia->fetchObject();
 }
 
-
-
 function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
@@ -33,34 +31,34 @@ function obtenerTipoDeGasto()
     return $sentencia->fetchAll();
 }
 
-//registrarNuevoUsuario('prueba','to','dd','dd','cliente','1000');
-function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro) {
+function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro)
+{
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO usuarios (admin, nombre, apellido, correo, clave, fecharegistro)
                    VALUES (0, :nombre, :apellido, :correo, :clave, :fecharegistro)";
-    
+
     $stmtUsuario = $bd->prepare($sentencia);
     $stmtUsuario->bindParam(':nombre', $nombre);
     $stmtUsuario->bindParam(':apellido', $apellido);
     $stmtUsuario->bindParam(':correo', $correo);
     $stmtUsuario->bindParam(':clave', $clave);
     $stmtUsuario->bindParam(':fecharegistro', $fecharegistro);
-    
+
     if ($stmtUsuario->execute()) {
         // Obtener el ID del nuevo usuario insertado
         $idUsuario = $bd->lastInsertId();
-        
+
         $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual)
                        VALUES (:idusuario, :tipousuario, :sueldomensual)";
-    
+
         $stmtCliente = $bd->prepare($sentencia);
         $stmtCliente->bindParam(':idusuario', $idUsuario);
         $stmtCliente->bindParam(':tipousuario', $tipousuario);
         $stmtCliente->bindParam(':sueldomensual', $sueldomensual);
-        
+
         if ($stmtCliente->execute()) {
             $respuesta = array('mensaje' => 'Nuevo usuario/cliente registrado con éxito');
             return $respuesta;
@@ -80,11 +78,11 @@ function registrarContacto($nombre, $apellido, $correo, $mensaje)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO contacto (nombre, apellido, correo, mensaje)
     VALUES (:nombre, :apellido, :correo, :mensaje);";
-    
+
     $sentencia = $bd->prepare($sentencia);
     $sentencia->bindParam(':nombre', $nombre);
     $sentencia->bindParam(':apellido', $apellido);
@@ -104,11 +102,11 @@ function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO `operaciones` (`monto`, `fechaoperacion`, `cliente_idusuario`, `tipo_gasto_id`)
     VALUES (:monto,:fechaoperacion , :idusuario, :tipo_gasto_id);";
-    
+
     $sentencia = $bd->prepare($sentencia);
     $sentencia->bindParam(':monto', $monto);
     $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
@@ -126,12 +124,12 @@ function editarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
-    
+
     // Insertar nuevo usuario en la tabla usuarios
     $sentencia = ("UPDATE operaciones
                            SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
                            WHERE id_operacion = :id_operacion");
-    
+
     $sentencia = $bd->prepare($sentencia);
     $sentencia->bindParam(':monto', $monto);
     $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
