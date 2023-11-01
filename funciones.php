@@ -15,6 +15,8 @@ function obtenerUsuario($user)
     return $sentencia->fetchObject();
 }
 
+
+
 function obtenerCliente($id)
 {
     $bd = obtenerConexion();
@@ -26,7 +28,11 @@ function obtenerCliente($id)
 function obtenerOperaciones($id)
 {
     $bd = obtenerConexion();
-    $sentencia = $bd->prepare("SELECT * FROM operaciones WHERE cliente_idusuario = :id");
+    $sentencia = $bd->prepare("SELECT operaciones.*, tipo_gasto.descripcion AS tipo_gasto_descripcion
+    FROM operaciones
+    INNER JOIN tipo_gasto ON operaciones.tipo_gasto_id = tipo_gasto.id_gasto
+    WHERE operaciones.cliente_idusuario = :id
+    ");
     $sentencia->bindParam(':id', $id, PDO::PARAM_INT);
     $sentencia->execute();
     return $sentencia->fetchAll();
@@ -39,6 +45,7 @@ function obtenerTipoDeGasto()
     return $sentencia->fetchAll();
 }
 
+//registrarNuevoUsuario('prueba','to','dd','dd','cliente','1000');
 function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro)
 {
     // Obtener una conexión a la base de datos
@@ -103,7 +110,6 @@ function registrarContacto($nombre, $apellido, $correo, $mensaje)
     }
 }
 
-
 function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
@@ -126,29 +132,96 @@ function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
         return $respuesta;
     }
 }
-function editarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
+
+function editarOperacion($id_operacion, $monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
     // Insertar nuevo usuario en la tabla usuarios
-    $sentencia = ("UPDATE operaciones
-                           SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
-                           WHERE id_operacion = :id_operacion");
+    $sentencia = $bd->prepare("UPDATE operaciones
+                               SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
+                               WHERE id_operacion = :id_operacion");
 
-    $sentencia = $bd->prepare($sentencia);
-    $sentencia->bindParam(':monto', $monto);
-    $sentencia->bindParam(':fechaoperacion', $fechaoperacion);
-    $sentencia->bindParam(':idusuario', $idusuario);
-    $sentencia->bindParam(':tipo_gasto_id', $tipo_gasto_id);
+    $sentencia->bindParam(':nuevo_monto', $monto); // Cambié aquí
+    $sentencia->bindParam(':nueva_fecha', $fechaoperacion); // Cambié aquí
+    $sentencia->bindParam(':nuevo_tipo_gasto', $tipo_gasto_id); // Cambié aquí
+    $sentencia->bindParam(':id_operacion', $id_operacion);
+
     if ($sentencia->execute()) {
-        $respuesta = array('mensaje' => 'Se actualizo la informacion correctamente');
+        $respuesta = array('mensaje' => 'Se actualizó la información correctamente');
         return $respuesta;
     } else {
-        $respuesta = array('mensaje' => "Error al actualizar los datos ");
+        $respuesta = array('mensaje' => "Error al actualizar los datos");
         return $respuesta;
     }
 }
+
+function eliminarOperacion($id_operacion, $idusuario)
+{
+    $bd = obtenerConexion();
+
+    // Verifica si la conexión a la base de datos fue exitosa
+    if (!$bd) {
+        return array('mensaje' => 'Error en la conexión a la base de datos');
+    }
+
+    try {
+        // Preparar la consulta SQL con un marcador de posición
+        $sentencia = $bd->prepare("DELETE FROM operaciones
+                                   WHERE id_operacion = :id_operacion");
+
+        // Vincula el parámetro
+        $sentencia->bindParam(':id_operacion', $id_operacion);
+
+        if ($sentencia->execute()) {
+            $respuesta = array('mensaje' => 'Se eliminó la operación correctamente');
+            return $respuesta;
+        } else {
+            $respuesta = array('mensaje' => 'Error al eliminar la operación');
+            return $respuesta;
+        }
+    } catch (PDOException $e) {
+        $respuesta = array('mensaje' => 'Error en la consulta: ' . $e->getMessage());
+        return $respuesta;
+    }
+}
+
+function buscador($filtro, $idusuario)
+{
+    $bd = obtenerConexion();
+
+    // Verifica si la conexión a la base de datos fue exitosa
+    if (!$bd) {
+        return array('mensaje' => 'Error en la conexión a la base de datos');
+    }
+
+    try {
+        // Preparar la consulta SQL con un marcador de posición
+        $sentencia = $bd->prepare("SELECT * FROM operaciones 
+                                  WHERE monto LIKE :filtro_monto 
+                                  OR fechaoperacion LIKE :filtro_fecha");
+
+        $filtro_monto = '%' . $filtro . '%'; // Agregar comodines % para búsqueda parcial
+        $filtro_fecha = '%' . $filtro . '%';
+
+        $sentencia->bindParam(':filtro_monto', $filtro_monto);
+        $sentencia->bindParam(':filtro_fecha', $filtro_fecha);
+
+        if ($sentencia->execute()) {
+            // Recupera los resultados
+            $resultados = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+            return $resultados;
+        } else {
+            $respuesta = array('mensaje' => 'Error en la consulta');
+            return $respuesta;
+        }
+    } catch (PDOException $e) {
+        $respuesta = array('mensaje' => 'Error en la consulta: ' . $e->getMessage());
+        return $respuesta;
+    }
+}
+
 function obtenerConexion()
 {
     $dbName = "bw9is5cg7nkeccmci5nc";

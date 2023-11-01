@@ -6,13 +6,14 @@ header("Content-Type: application/json");
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (isset($data['monto']) && isset($data['idusuario']) && isset($data['tipo_gasto_id'])) {
+if (isset($data['id_operacion']) && isset($data['monto']) &&  isset($data['idusuario']) && isset($data['tipo_gasto_id']) ) {
+    $id_operacion = $data['id_operacion'];
     $monto = $data['monto'];
     $idusuario = $data['idusuario'];
     $tipo_gasto_id = $data['tipo_gasto_id'];
     $fechaoperacion = date('Y-m-d H:i:s');
-
-    $respuesta = editarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id);
+    
+    $respuesta = editarOperacion($id_operacion,$monto,$fechaoperacion,$idusuario,$tipo_gasto_id);
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
