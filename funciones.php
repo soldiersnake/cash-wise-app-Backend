@@ -127,7 +127,7 @@ function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
     }
 }
 
-function editarOperacion($id_operacion, $monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
+function editarOperacion($id_operacion, $monto, $fechaoperacion, $tipo_gasto_id)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
@@ -143,7 +143,7 @@ function editarOperacion($id_operacion, $monto, $fechaoperacion, $idusuario, $ti
     $sentencia->bindParam(':id_operacion', $id_operacion);
     
     if ($sentencia->execute()) {
-        $respuesta = array('mensaje' => 'Se actualizó la información correctamente');
+        $respuesta = array('mensaje' => 'true');
         return $respuesta;
     } else {
         $respuesta = array('mensaje' => "Error al actualizar los datos");
@@ -151,7 +151,7 @@ function editarOperacion($id_operacion, $monto, $fechaoperacion, $idusuario, $ti
     }
 }
 
-function eliminarOperacion($id_operacion, $idusuario)
+function eliminarOperacion($id_operacion)
 {
     $bd = obtenerConexion();
 

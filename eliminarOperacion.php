@@ -6,11 +6,10 @@ header("Content-Type: application/json");
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-if (isset($data['id_operacion'])  &&  isset($data['idusuario'])  ) {
+if (isset($data['id_operacion'])    ) {
     $id_operacion = $data['id_operacion'];
-    $idusuario = $data['idusuario'];
     
-    $respuesta = eliminarOperacion($id_operacion,$idusuario);
+    $respuesta = eliminarOperacion($id_operacion);
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
