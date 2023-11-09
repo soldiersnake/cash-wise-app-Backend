@@ -2,6 +2,78 @@
 header("Content-Type: application/json");
 
 
+function registrarIngreso($fuente,$descripcion, $monto, $idusuario)
+{
+    // Obtener una conexión a la base de datos
+    $bd = obtenerConexion();
+
+    // Insertar nuevo usuario en la tabla usuarios
+    $sentencia = "INSERT INTO ingresos (fuente, descripcion, monto, fecha, id_usuario)
+    VALUES (:fuente, :descripcion, :monto, :fecha, :id_usuario );";
+    $fecha=date('Y-m-d H:i:s');
+    $sentencia = $bd->prepare($sentencia);
+    $sentencia->bindParam(':fuente', $fuente);
+    $sentencia->bindParam(':descripcion', $descripcion);
+    $sentencia->bindParam(':monto', $monto);
+    $sentencia->bindParam(':id_usuario', $idusuario);
+    $sentencia->bindParam(':fecha', $fecha);
+    
+    if ($sentencia->execute()) {
+        $respuesta = array('mensaje' => 'true');
+        return $respuesta;
+    } else {
+        $respuesta = array('mensaje' => "false");
+        return $respuesta;
+    }
+}
+
+function eliminarIngreso($id_ingreso)
+{
+    $bd = obtenerConexion();
+
+    if (!$bd) {
+        return array('mensaje' => 'Error en la conexión a la base de datos');
+    }
+
+    try {
+        $sentencia = $bd->prepare("DELETE FROM ingresos
+                                   WHERE id_ingreso = :id_ingreso");
+
+        $sentencia->bindParam(':id_ingreso', $id_ingreso);
+
+        if ($sentencia->execute()) {
+            $respuesta = array('mensaje' => 'true');
+            return $respuesta;
+        } else {
+            $respuesta = array('mensaje' => 'Error al eliminar la operación');
+            return $respuesta;
+        }
+    } catch (PDOException $e) {
+        $respuesta = array('mensaje' => 'Error en la consulta: ' . $e->getMessage());
+        return $respuesta;
+    }
+}
+
+function editarIngreso($id_ingreso, $descripcion, $monto,$fuente)
+{
+    $bd = obtenerConexion();
+
+    $sentencia = $bd->prepare("UPDATE ingresos
+                               SET descripcion = :nuevo_descripcion, monto = :nuevo_monto, fecha = :getfecha, fuente = :nueva_fuente
+                               WHERE id_ingreso = :id_ingreso");
+    $sentencia->bindParam(':getfecha',date('Y-m-d H:i:s'));
+    $sentencia->bindParam(':nuevo_descripcion', $descripcion); 
+    $sentencia->bindParam(':nueva_fuente', $fuente); 
+    $sentencia->bindParam(':nuevo_monto', $monto); 
+    $sentencia->bindParam(':id_ingreso', $id_ingreso);
+
+    if ($sentencia->execute()) {
+        return array('mensaje' => 'true');
+    } else {
+        $respuesta = array('mensaje' => "Error al actualizar los datos");
+        return $respuesta;
+    }
+}
 function obtenerIngresos($idusuario)
 {
     $bd = obtenerConexion();
