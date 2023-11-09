@@ -16,5 +16,6 @@ if (isset($data['id_ingreso']) && isset($data['descripcion']) &&  isset($data['m
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
+
 echo json_encode($respuesta);
 ?>

@@ -10,7 +10,7 @@ if (!isset($_GET["id"])) {
 
 $id = $_GET["id"];
 
-
 $operaciones = obtenerOperacionPorID_O($id);
+
 echo json_encode($operaciones);
 ?>

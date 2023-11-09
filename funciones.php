@@ -1,8 +1,7 @@
 <?php
 header("Content-Type: application/json");
 
-
-function editarUsuario($idusuario, $nombre, $apellido,$sueldo)
+function editarUsuario($idusuario, $nombre, $apellido, $sueldo)
 {
     $bd = obtenerConexion();
 
@@ -15,9 +14,9 @@ function editarUsuario($idusuario, $nombre, $apellido,$sueldo)
     WHERE
       u.idusuario = :idusuario; 
     ");
-    $sentencia->bindParam(':nombre', $nombre); 
-    $sentencia->bindParam(':apellido', $apellido); 
-    $sentencia->bindParam(':nuevo_sueldo', $sueldo); 
+    $sentencia->bindParam(':nombre', $nombre);
+    $sentencia->bindParam(':apellido', $apellido);
+    $sentencia->bindParam(':nuevo_sueldo', $sueldo);
     $sentencia->bindParam(':idusuario', $idusuario);
 
     if ($sentencia->execute()) {
@@ -28,22 +27,20 @@ function editarUsuario($idusuario, $nombre, $apellido,$sueldo)
     }
 }
 
-function registrarIngreso($fuente,$descripcion, $monto, $idusuario)
+function registrarIngreso($fuente, $descripcion, $monto, $idusuario)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO ingresos (fuente, descripcion, monto, fecha, id_usuario)
     VALUES (:fuente, :descripcion, :monto, :fecha, :id_usuario );";
-    $fecha=date('Y-m-d H:i:s');
+    $fecha = date('Y-m-d H:i:s');
     $sentencia = $bd->prepare($sentencia);
     $sentencia->bindParam(':fuente', $fuente);
     $sentencia->bindParam(':descripcion', $descripcion);
     $sentencia->bindParam(':monto', $monto);
     $sentencia->bindParam(':id_usuario', $idusuario);
     $sentencia->bindParam(':fecha', $fecha);
-    
+
     if ($sentencia->execute()) {
         $respuesta = array('mensaje' => 'true');
         return $respuesta;
@@ -80,17 +77,17 @@ function eliminarIngreso($id_ingreso)
     }
 }
 
-function editarIngreso($id_ingreso, $descripcion, $monto,$fuente)
+function editarIngreso($id_ingreso, $descripcion, $monto, $fuente)
 {
     $bd = obtenerConexion();
 
     $sentencia = $bd->prepare("UPDATE ingresos
                                SET descripcion = :nuevo_descripcion, monto = :nuevo_monto, fecha = :getfecha, fuente = :nueva_fuente
                                WHERE id_ingreso = :id_ingreso");
-    $sentencia->bindParam(':getfecha',date('Y-m-d H:i:s'));
-    $sentencia->bindParam(':nuevo_descripcion', $descripcion); 
-    $sentencia->bindParam(':nueva_fuente', $fuente); 
-    $sentencia->bindParam(':nuevo_monto', $monto); 
+    $sentencia->bindParam(':getfecha', date('Y-m-d H:i:s'));
+    $sentencia->bindParam(':nuevo_descripcion', $descripcion);
+    $sentencia->bindParam(':nueva_fuente', $fuente);
+    $sentencia->bindParam(':nuevo_monto', $monto);
     $sentencia->bindParam(':id_ingreso', $id_ingreso);
 
     if ($sentencia->execute()) {
@@ -109,20 +106,21 @@ function obtenerIngresos($idusuario)
     return $sentencia->fetchAll();
 }
 
-function setEstado($idusuario, $estado )
+function setEstado($idusuario, $estado)
 {
     $bd = obtenerConexion();
     $sentencia = $bd->prepare("UPDATE usuarios SET estado = :estado WHERE idusuario = :idusuario");
     $sentencia->bindParam(':estado', $estado, PDO::PARAM_INT);
     $sentencia->bindParam(':idusuario', $idusuario, PDO::PARAM_INT);
-    
+
     if ($sentencia->execute()) {
-        return array('mensaje' => 'true');; 
+        return array('mensaje' => 'true');
+        ;
     } else {
-        return array('mensaje' => 'false');; 
+        return array('mensaje' => 'false');
+        ;
     }
 }
-
 
 function obtenerUsuarios()
 {
@@ -139,8 +137,6 @@ function obtenerUsuario($user)
     return $sentencia->fetchObject();
 }
 
-
-
 function obtenerCliente($id)
 {
     $bd = obtenerConexion();
@@ -148,8 +144,6 @@ function obtenerCliente($id)
     $sentencia->execute([$id]);
     return $sentencia->fetchObject();
 }
-
-
 
 function obtenerOperaciones($id)
 {
@@ -180,13 +174,10 @@ function obtenerTipoDeGasto()
     return $sentencia->fetchAll();
 }
 
-//registrarNuevoUsuario('prueba','to','dd','dd','cliente','1000');
 function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario, $sueldomensual, $fecharegistro)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO usuarios (admin, nombre, apellido, correo, clave, fecharegistro, estado)VALUES (0, :nombre, :apellido, :correo, :clave, :fecharegistro, 1)";
 
     $stmtUsuario = $bd->prepare($sentencia);
@@ -197,7 +188,6 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
     $stmtUsuario->bindParam(':fecharegistro', $fecharegistro);
 
     if ($stmtUsuario->execute()) {
-        // Obtener el ID del nuevo usuario insertado
         $idUsuario = $bd->lastInsertId();
 
         $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual) VALUES (:idusuario, :tipousuario, :sueldomensual)";
@@ -222,16 +212,14 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
 
 function editarGasto($id_gasto, $descripcion, $color)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = $bd->prepare("UPDATE tipo_gasto
                                SET descripcion = :nuevo_descripcion, color = :nuevo_color
                                WHERE id_gasto = :id_gasto");
 
-    $sentencia->bindParam(':nuevo_descripcion', $descripcion); // Cambié aquí
-    $sentencia->bindParam(':nuevo_color', $color); // Cambié aquí
+    $sentencia->bindParam(':nuevo_descripcion', $descripcion);
+    $sentencia->bindParam(':nuevo_color', $color);
     $sentencia->bindParam(':id_gasto', $id_gasto);
 
     if ($sentencia->execute()) {
@@ -245,10 +233,8 @@ function editarGasto($id_gasto, $descripcion, $color)
 
 function registrarTipoGasto($descripcion, $color)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO tipo_gasto (descripcion, color)
     VALUES ( :descripcion, :color);";
 
@@ -293,10 +279,8 @@ function eliminarGasto($id_gasto)
 
 function registrarContacto($nombre, $apellido, $correo, $mensaje)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO contacto (nombre, apellido, correo, mensaje)
     VALUES (:nombre, :apellido, :correo, :mensaje);";
 
@@ -316,10 +300,8 @@ function registrarContacto($nombre, $apellido, $correo, $mensaje)
 
 function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = "INSERT INTO `operaciones` (`monto`, `fechaoperacion`, `cliente_idusuario`, `tipo_gasto_id`)
     VALUES (:monto,:fechaoperacion , :idusuario, :tipo_gasto_id);";
 
@@ -339,17 +321,15 @@ function registrarGasto($monto, $fechaoperacion, $idusuario, $tipo_gasto_id)
 
 function editarOperacion($id_operacion, $monto, $fechaoperacion, $tipo_gasto_id)
 {
-    // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
 
-    // Insertar nuevo usuario en la tabla usuarios
     $sentencia = $bd->prepare("UPDATE operaciones
                                SET monto = :nuevo_monto, fechaoperacion = :nueva_fecha, tipo_gasto_id = :nuevo_tipo_gasto
                                WHERE id_operacion = :id_operacion");
 
-    $sentencia->bindParam(':nuevo_monto', $monto); // Cambié aquí
-    $sentencia->bindParam(':nueva_fecha', $fechaoperacion); // Cambié aquí
-    $sentencia->bindParam(':nuevo_tipo_gasto', $tipo_gasto_id); // Cambié aquí
+    $sentencia->bindParam(':nuevo_monto', $monto);
+    $sentencia->bindParam(':nueva_fecha', $fechaoperacion);
+    $sentencia->bindParam(':nuevo_tipo_gasto', $tipo_gasto_id);
     $sentencia->bindParam(':id_operacion', $id_operacion);
 
     if ($sentencia->execute()) {
@@ -387,18 +367,17 @@ function eliminarOperacion($id_operacion)
         return $respuesta;
     }
 }
+
 function buscador($filtro, $idusuario)
 {
     $bd = obtenerConexion();
 
-    // Verifica si la conexión a la base de datos fue exitosa
     if (!$bd) {
         return array('mensaje' => 'Error en la conexión a la base de datos');
     }
 
     try {
-        // Preparar la consulta SQL con un marcador de posición
-        $filtro_monto = '%' . $filtro . '%'; // Agregar comodines % para búsqueda parcial
+        $filtro_monto = '%' . $filtro . '%';
         $filtro_descripcion = '%' . $filtro . '%';
         $filtro_fecha = '%' . $filtro . '%';
 
@@ -417,7 +396,6 @@ function buscador($filtro, $idusuario)
         $sentencia->bindParam(':idusuario', $idusuario);
 
         if ($sentencia->execute()) {
-            // Recupera los resultados
             $resultados = $sentencia->fetchAll(PDO::FETCH_ASSOC);
             return $resultados;
         } else {
@@ -429,7 +407,6 @@ function buscador($filtro, $idusuario)
         return $respuesta;
     }
 }
-
 
 function obtenerConexion()
 {

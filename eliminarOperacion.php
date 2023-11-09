@@ -13,5 +13,6 @@ if (isset($data['id_operacion'])    ) {
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
+
 echo json_encode($respuesta);
 ?>

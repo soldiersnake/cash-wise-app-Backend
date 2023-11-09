@@ -16,6 +16,6 @@ if (isset($data['id_operacion']) && isset($data['monto']) &&  isset($data['tipo_
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
-// $respuesta =editarOperacion(1,"3500",date('Y-m-d H:i:s'),8);
+
 echo json_encode($respuesta);
 ?>

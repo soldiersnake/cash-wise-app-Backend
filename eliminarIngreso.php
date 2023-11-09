@@ -13,6 +13,6 @@ if ( isset($data['id_ingreso']) ) {
 } else {
     $respuesta = array('mensaje' => 'Complete todos los campos');
 }
-// $respuesta =editarOperacion(1,"3500",date('Y-m-d H:i:s'),8);
+
 echo json_encode($respuesta);
 ?>

@@ -15,6 +15,6 @@ if (isset($data['id_gasto']) && isset($data['descripcion']) &&  isset($data['col
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
-// $respuesta =editarOperacion(1,"3500",date('Y-m-d H:i:s'),8);
+
 echo json_encode($respuesta);
 ?>

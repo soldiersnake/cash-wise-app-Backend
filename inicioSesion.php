@@ -5,6 +5,6 @@ include_once "funciones.php";
 session_start();
 
 $_SESSION['idSesion'] = session_create_id();
-echo json_encode($_SESSION['idSesion']);
 
+echo json_encode($_SESSION['idSesion']);
 ?>

@@ -16,5 +16,6 @@ if (isset($data['monto']) && isset($data['idusuario']) && isset($data['tipo_gast
 } else {
     $respuesta = array('mensaje' => 'Faltan datos requeridos');
 }
+
 echo json_encode($respuesta);
 ?>
