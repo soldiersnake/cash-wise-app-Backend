@@ -2,7 +2,7 @@
 header("Content-Type: application/json");
 
 
-function editarUsuario($idusuario, $nombre, $apellido,$sueldo,$correo)
+function editarUsuario($idusuario, $nombre, $apellido,$sueldo)
 {
     $bd = obtenerConexion();
 
@@ -11,14 +11,12 @@ function editarUsuario($idusuario, $nombre, $apellido,$sueldo,$correo)
     SET
       u.nombre = :nombre,
       u.apellido = :apellido,
-      u.correo = :correo,
       c.sueldomensual = :nuevo_sueldo
     WHERE
       u.idusuario = :idusuario; 
     ");
     $sentencia->bindParam(':nombre', $nombre); 
     $sentencia->bindParam(':apellido', $apellido); 
-    $sentencia->bindParam(':correo', $correo); 
     $sentencia->bindParam(':nuevo_sueldo', $sueldo); 
     $sentencia->bindParam(':idusuario', $idusuario);
 
