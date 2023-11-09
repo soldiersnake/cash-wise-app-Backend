@@ -2,6 +2,34 @@
 header("Content-Type: application/json");
 
 
+function editarUsuario($idusuario, $nombre, $apellido,$sueldo,$correo)
+{
+    $bd = obtenerConexion();
+
+    $sentencia = $bd->prepare("UPDATE usuarios AS u
+    JOIN cliente AS c ON u.idusuario = c.idusuario
+    SET
+      u.nombre = :nombre,
+      u.apellido = :apellido,
+      u.correo = :correo,
+      c.sueldomensual = :nuevo_sueldo
+    WHERE
+      u.idusuario = :idusuario; 
+    ");
+    $sentencia->bindParam(':nombre', $nombre); 
+    $sentencia->bindParam(':apellido', $apellido); 
+    $sentencia->bindParam(':correo', $correo); 
+    $sentencia->bindParam(':nuevo_sueldo', $sueldo); 
+    $sentencia->bindParam(':idusuario', $idusuario);
+
+    if ($sentencia->execute()) {
+        return array('mensaje' => 'true');
+    } else {
+        $respuesta = array('mensaje' => "Error al actualizar los datos");
+        return $respuesta;
+    }
+}
+
 function registrarIngreso($fuente,$descripcion, $monto, $idusuario)
 {
     // Obtener una conexión a la base de datos
