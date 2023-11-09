@@ -2,6 +2,29 @@
 header("Content-Type: application/json");
 
 
+function obtenerIngresos($idusuario)
+{
+    $bd = obtenerConexion();
+    $sentencia = $bd->prepare("SELECT * FROM ingresos WHERE id_usuario = :idusuario");
+    $sentencia->bindParam(':idusuario', $idusuario, PDO::PARAM_INT);
+    $sentencia->execute();
+    return $sentencia->fetchAll();
+}
+
+function setEstado($idusuario, $estado )
+{
+    $bd = obtenerConexion();
+    $sentencia = $bd->prepare("UPDATE usuarios SET estado = :estado WHERE idusuario = :idusuario");
+    $sentencia->bindParam(':estado', $estado, PDO::PARAM_INT);
+    $sentencia->bindParam(':idusuario', $idusuario, PDO::PARAM_INT);
+    
+    if ($sentencia->execute()) {
+        return array('mensaje' => 'true');; 
+    } else {
+        return array('mensaje' => 'false');; 
+    }
+}
+
 
 function obtenerUsuarios()
 {
@@ -66,8 +89,7 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
     $bd = obtenerConexion();
 
     // Insertar nuevo usuario en la tabla usuarios
-    $sentencia = "INSERT INTO usuarios (admin, nombre, apellido, correo, clave, fecharegistro)
-                   VALUES (0, :nombre, :apellido, :correo, :clave, :fecharegistro)";
+    $sentencia = "INSERT INTO usuarios (admin, nombre, apellido, correo, clave, fecharegistro, estado)VALUES (0, :nombre, :apellido, :correo, :clave, :fecharegistro, 1)";
 
     $stmtUsuario = $bd->prepare($sentencia);
     $stmtUsuario->bindParam(':nombre', $nombre);
@@ -80,8 +102,7 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
         // Obtener el ID del nuevo usuario insertado
         $idUsuario = $bd->lastInsertId();
 
-        $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual)
-                       VALUES (:idusuario, :tipousuario, :sueldomensual)";
+        $sentencia = "INSERT INTO cliente (idusuario, tipousuario, sueldomensual) VALUES (:idusuario, :tipousuario, :sueldomensual)";
 
         $stmtCliente = $bd->prepare($sentencia);
         $stmtCliente->bindParam(':idusuario', $idUsuario);
@@ -92,16 +113,16 @@ function registrarNuevoUsuario($nombre, $apellido, $correo, $clave, $tipousuario
             $respuesta = array('mensaje' => 'Nuevo usuario/cliente registrado con éxito');
             return $respuesta;
         } else {
-            $respuesta = array('mensaje' => 'Error al registrar el cliente: ' . implode(", ", $stmtCliente->errorInfo()));
+            $respuesta = array('mensaje' => 'Error al registrar el cliente: ');
             return $respuesta;
         }
     } else {
-        $respuesta = array('mensaje' => 'Error al registrar el usuario: ' . implode(", ", $stmtUsuario->errorInfo()));
+        $respuesta = array('mensaje' => 'Error al registrar el usuario: ');
         return $respuesta;
     }
 }
 
-function editarGasto($id_gasto,$descripcion,$color)
+function editarGasto($id_gasto, $descripcion, $color)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
@@ -124,7 +145,7 @@ function editarGasto($id_gasto,$descripcion,$color)
     }
 }
 
-function registrarTipoGasto($descripcion,$color)
+function registrarTipoGasto($descripcion, $color)
 {
     // Obtener una conexión a la base de datos
     $bd = obtenerConexion();
@@ -326,7 +347,6 @@ function obtenerConexion()
         $database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $database->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         return $database;
-
     } catch (PDOException $e) {
         echo $e->getMessage();
     }
